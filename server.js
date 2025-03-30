@@ -7,7 +7,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from the current directory
+app.use(express.static('./'));
 
 // Store rooms data
 const rooms = {
@@ -65,6 +66,7 @@ io.on('connection', (socket) => {
     socket.emit('roomJoined', { room: roomName, users: userList });
     socket.to(roomName).emit('userJoined', { username, users: userList });
   });
+
   socket.on('leaveRoom', (data) => {
     if (currentRoom && rooms[currentRoom]) {
       // Remove user from room
@@ -86,6 +88,7 @@ io.on('connection', (socket) => {
       currentRoom = null;
     }
   });
+
   // Handle chat messages
   socket.on('message', (data) => {
     if (!currentRoom || !username) return;

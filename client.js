@@ -245,6 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         room: room,
         isPrivate: isPrivate,
         roomCode: code
+        
       });
     }
   
