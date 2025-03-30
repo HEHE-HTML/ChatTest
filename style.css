@@ -1,3 +1,4 @@
+
 * {
   margin: 0;
   padding: 0;
@@ -32,6 +33,8 @@ body {
   padding: 28px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .hidden {
@@ -48,7 +51,7 @@ body {
 
 #login-screen h1 {
   color: #4a6ee0;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   font-size: 2.5rem;
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(74, 110, 224, 0.1);
@@ -57,16 +60,20 @@ body {
 .login-form {
   width: 85%;
   max-width: 450px;
-  padding: 20px;
+  padding: 25px;
   border-radius: 12px;
   background-color: white;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 input {
   width: 100%;
+  max-width: 350px;
   padding: 14px 18px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   border: 2px solid #e6eeff;
   border-radius: 8px;
   font-size: 16px;
@@ -88,8 +95,10 @@ button {
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
-  margin: 6px;
+  margin: 8px 0;
   transition: all 0.2s ease;
+  width: 100%;
+  max-width: 350px;
 }
 
 button:hover {
@@ -105,15 +114,17 @@ button:active {
 .room-options {
   display: flex;
   flex-direction: column;
-  margin-top: 30px;
-  width: 85%;
-  max-width: 450px;
+  align-items: center;
+  margin-top: 15px;
+  width: 100%;
+  max-width: 350px;
 }
 
 .room-list {
   max-height: 300px;
   overflow-y: auto;
   margin: 18px 0;
+  width: 100%;
   border: 2px solid #e6eeff;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
@@ -149,8 +160,8 @@ button:active {
 
 /* Chat Screen */
 #chat-screen {
-  display: flex;
-  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
 }
 
 .chat-header {
@@ -160,6 +171,7 @@ button:active {
   padding-bottom: 16px;
   margin-bottom: 10px;
   border-bottom: 2px solid #eef2ff;
+  width: 100%;
 }
 
 .chat-header h2 {
@@ -167,9 +179,15 @@ button:active {
   font-weight: 600;
 }
 
+.chat-header button {
+  width: auto;
+  max-width: none;
+}
+
 .chat-container {
   display: flex;
   flex: 1;
+  width: 100%;
   overflow: hidden;
   background-color: #fafcff;
   border-radius: 12px;
@@ -226,7 +244,7 @@ button:active {
 .message-sender {
   font-weight: 600;
   color: #4a6ee0;
-  margin-right: 16px; /* More space between username and date */
+  margin-right: 16px;
 }
 
 .users-container {
@@ -241,6 +259,7 @@ button:active {
   margin-bottom: 12px;
   color: #4a6ee0;
   font-size: 16px;
+  text-align: center;
 }
 
 .users-list {
@@ -254,6 +273,7 @@ button:active {
   background-color: #f6f9ff;
   font-weight: 500;
   transition: all 0.2s ease;
+  text-align: center;
 }
 
 .users-list li:hover {
@@ -263,12 +283,15 @@ button:active {
 .input-container {
   display: flex;
   padding: 16px 0 0 0;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
 }
 
 #message-input {
   flex: 1;
   margin-bottom: 0;
-  margin-right: 14px;
+  margin-right: 10px;
   border-radius: 24px;
   padding: 14px 20px;
   font-size: 15px;
@@ -280,6 +303,9 @@ button:active {
   border-radius: 24px;
   font-size: 15px;
   padding: 14px 24px;
+  width: auto;
+  max-width: none;
+  margin: 0;
 }
 
 .system-message {
@@ -294,6 +320,122 @@ button:active {
   width: fit-content;
   align-self: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+/* Revamped Create Room Styles */
+#room-selector, #create-room, #join-private {
+  width: 85%;
+  max-width: 450px;
+  padding: 28px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 8px 24px rgba(74, 110, 224, 0.1);
+  margin-top: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#room-selector h2, #create-room h2, #join-private h2 {
+  color: #4a6ee0;
+  margin-bottom: 24px;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.room-type {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* Toggle Switch Styling */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.toggle-label {
+  font-weight: 600;
+  font-size: 16px;
+  color: #4c5773;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 56px;
+  height: 30px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e6eeff;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .toggle-slider {
+  background-color: #4a6ee0;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+
+.private-room-info {
+  font-size: 13px;
+  color: #7a8299;
+  margin-top: -12px;
+  margin-bottom: 15px;
+  text-align: center;
+  width: 100%;
+  max-width: 350px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.actions button {
+  flex: 1;
+  margin: 0 5px;
 }
 
 /* Media Queries for Responsiveness */
@@ -342,6 +484,14 @@ button:active {
   #send-btn {
     align-self: flex-end;
   }
+  
+  .actions {
+    flex-direction: column;
+  }
+  
+  .actions button {
+    margin: 5px 0;
+  }
 }
 
 @media (max-width: 480px) {
@@ -349,11 +499,264 @@ button:active {
     font-size: 2rem;
   }
   
-  .login-form, .room-options {
+  .login-form, .room-options, #create-room, #join-private, #room-selector {
     width: 95%;
   }
   
   .message {
     max-width: 90%;
   }
+}
+/* Sidebar styling */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+  background-color: white;
+  border-left: 2px solid #eef2ff;
+}
+
+/* Poll container styling */
+.poll-container {
+  padding: 16px;
+  border-top: 2px solid #eef2ff;
+  background-color: white;
+}
+
+.poll-container h3 {
+  margin-bottom: 12px;
+  color: #4a6ee0;
+  font-size: 16px;
+  text-align: center;
+}
+
+.poll {
+  background-color: #f6f9ff;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.poll-question {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #4c5773;
+}
+
+.poll-options {
+  margin-bottom: 10px;
+}
+
+.poll-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.poll-option:hover {
+  background-color: #eef2ff;
+}
+
+.poll-option-text {
+  flex: 1;
+}
+
+.poll-option-votes {
+  font-weight: 600;
+  color: #4a6ee0;
+  margin-left: 10px;
+}
+
+.poll-progress {
+  height: 8px;
+  background-color: #e6eeff;
+  border-radius: 4px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.poll-progress-bar {
+  height: 100%;
+  background-color: #4a6ee0;
+  transition: width 0.3s ease;
+}
+
+.poll-results {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #7a8299;
+  text-align: center;
+}
+
+.create-poll-btn {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Create poll form */
+.create-poll-form {
+  background-color: #f6f9ff;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.create-poll-form input,
+.create-poll-form textarea {
+  margin-bottom: 10px;
+}
+
+.poll-options-list {
+  margin-bottom: 10px;
+}
+
+.add-option-btn {
+  background-color: #4a6ee0;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.add-option-btn:hover {
+  background-color: #3a5bcc;
+}
+/* Enhanced Context Menu Styling */
+.user-context-menu {
+  position: absolute;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  padding: 18px 0; /* Increased padding */
+  z-index: 100;
+  min-width: 180px;
+  max-width: 280px;
+}
+
+/* Updated Poll Container to remove scrollbars */
+.poll-container {
+  padding: 16px;
+  border-top: 2px solid #eef2ff;
+  background-color: white;
+  max-height: none; /* Remove the max-height that was causing scrollbars */
+  overflow-y: visible; /* Change from auto to visible */
+}
+
+/* More minimal ban poll styling */
+.ban-poll {
+  background-color: #fff8f8;
+  border-radius: 10px;
+  padding: 10px; /* Reduced padding */
+  margin-bottom: 12px; /* Reduced margin */
+  box-shadow: 0 1px 4px rgba(255, 82, 82, 0.1); /* Lighter shadow */
+  border-left: 2px solid #ff5252; /* Thinner border */
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Simplified poll header */
+.poll-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px; /* Reduced margin */
+}
+
+.poll-title {
+  font-weight: 600;
+  color: #ff5252;
+  font-size: 14px; /* Smaller font */
+}
+
+.poll-timer {
+  background-color: #ff5252;
+  color: white;
+  border-radius: 10px;
+  padding: 2px 8px; /* Smaller padding */
+  font-size: 11px; /* Smaller font */
+  font-weight: 600;
+}
+
+.poll-info {
+  font-size: 11px; /* Smaller font */
+  color: #7a8299;
+  margin-bottom: 8px; /* Reduced margin */
+}
+
+/* Simplified progress bar */
+.poll-progress {
+  height: 8px; /* Thinner progress bar */
+  background-color: #f2f2f2;
+  border-radius: 4px; /* Smaller radius */
+  margin-bottom: 8px; /* Reduced margin */
+  overflow: hidden;
+  position: relative;
+}
+
+/* More minimal action buttons */
+.poll-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px; /* Smaller gap */
+}
+
+.vote-yes, .vote-no {
+  flex: 1;
+  padding: 6px 10px; /* Smaller padding */
+  border-radius: 4px; /* Smaller radius */
+  font-size: 12px; /* Smaller font */
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* More minimal ban button */
+.ban-btn {
+  font-size: 10px; /* Smaller font */
+  color: white;
+  background-color: #ff5252;
+  border: none;
+  border-radius: 3px; /* Smaller radius */
+  width: 20px; /* Smaller width */
+  height: 20px; /* Smaller height */
+  padding: 0;
+  cursor: pointer;
+  margin-left: 6px; /* Smaller margin */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(255, 82, 82, 0.2); /* Lighter shadow */
+  transition: all 0.2s ease;
+}
+
+.ban-btn:hover {
+  background-color: #d32f2f;
+  transform: scale(1.05); /* Reduced scale effect */
+}
+
+/* Make the sidebar layout better structured to avoid scrollbars */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+  background-color: white;
+  border-left: 2px solid #eef2ff;
+}
+
+.users-container {
+  flex: 2; /* Gives more space to users container */
+  overflow-y: auto;
+}
+
+.poll-container {
+  flex: 1; /* Takes less space */
+  overflow-y: visible; /* Ensures no scrollbars */
 }
