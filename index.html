@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Chatroom</title>
+  <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f2f7ff;
+  color: #333;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.app-container {
+  width: 95%;
+  max-width: 1100px;
+  height: 85vh;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(74, 110, 224, 0.15);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.screen {
+  height: 100%;
+  width: 100%;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Login Screen */
+#login-screen {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(to bottom right, #ffffff, #f5f8ff);
+}
+
+#login-screen h1 {
+  color: #4a6ee0;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(74, 110, 224, 0.1);
+}
+
+.login-form {
+  width: 85%;
+  max-width: 450px;
+  padding: 25px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input {
+  width: 100%;
+  max-width: 350px;
+  padding: 14px 18px;
+  margin-bottom: 15px;
+  border: 2px solid #e6eeff;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4a6ee0;
+  box-shadow: 0 0 0 3px rgba(74, 110, 224, 0.2);
+}
+
+button {
+  background-color: #4a6ee0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 8px 0;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 350px;
+}
+
+button:hover {
+  background-color: #3a5bcc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(74, 110, 224, 0.2);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.room-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.room-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 18px 0;
+  width: 100%;
+  border: 2px solid #e6eeff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.room-item {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eef2ff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.room-item:last-child {
+  border-bottom: none;
+}
+
+.room-item:hover {
+  background-color: #f6f9ff;
+}
+
+.private-badge {
+  background-color: #ff9800;
+  color: white;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(255, 152, 0, 0.2);
+}
+
+/* Chat Screen */
+#chat-screen {
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #eef2ff;
+  width: 100%;
+}
+
+.chat-header h2 {
+  color: #4a6ee0;
+  font-weight: 600;
+}
+
+.chat-header button {
+  width: auto;
+  max-width: none;
+}
+
+.chat-container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  background-color: #fafcff;
+  border-radius: 12px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.messages-container {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  max-width: 78%;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 14px;
+  word-break: break-word;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message.self {
+  align-self: flex-end;
+  background-color: #e1f0fd;
+  border-bottom-right-radius: 4px;
+}
+
+.message.other {
+  align-self: flex-start;
+  background-color: white;
+  border-bottom-left-radius: 4px;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #7a8299;
+}
+
+.message-sender {
+  font-weight: 600;
+  color: #4a6ee0;
+  margin-right: 16px;
+}
+
+.users-container {
+  width: 180px;
+  padding: 16px;
+  border-left: 2px solid #eef2ff;
+  overflow-y: auto;
+  background-color: white;
+}
+
+.users-container h3 {
+  margin-bottom: 12px;
+  color: #4a6ee0;
+  font-size: 16px;
+  text-align: center;
+}
+
+.users-list {
+  list-style: none;
+}
+
+.users-list li {
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  background-color: #f6f9ff;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.users-list li:hover {
+  background-color: #eef2ff;
+}
+
+.input-container {
+  display: flex;
+  padding: 16px 0 0 0;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+#message-input {
+  flex: 1;
+  margin-bottom: 0;
+  margin-right: 10px;
+  border-radius: 24px;
+  padding: 14px 20px;
+  font-size: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+#send-btn {
+  white-space: nowrap;
+  border-radius: 24px;
+  font-size: 15px;
+  padding: 14px 24px;
+  width: auto;
+  max-width: none;
+  margin: 0;
+}
+
+.system-message {
+  text-align: center;
+  margin: 14px 0;
+  color: #7a8299;
+  font-style: italic;
+  font-size: 14px;
+  background-color: #f6f9ff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  width: fit-content;
+  align-self: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+/* Revamped Create Room Styles */
+#room-selector, #create-room, #join-private {
+  width: 85%;
+  max-width: 450px;
+  padding: 28px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 8px 24px rgba(74, 110, 224, 0.1);
+  margin-top: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#room-selector h2, #create-room h2, #join-private h2 {
+  color: #4a6ee0;
+  margin-bottom: 24px;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.room-type {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* Toggle Switch Styling */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.toggle-label {
+  font-weight: 600;
+  font-size: 16px;
+  color: #4c5773;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 56px;
+  height: 30px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e6eeff;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .toggle-slider {
+  background-color: #4a6ee0;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+
+.private-room-info {
+  font-size: 13px;
+  color: #7a8299;
+  margin-top: -12px;
+  margin-bottom: 15px;
+  text-align: center;
+  width: 100%;
+  max-width: 350px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.actions button {
+  flex: 1;
+  margin: 0 5px;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .app-container {
+    width: 100%;
+    height: 90vh;
+    border-radius: 12px;
+  }
+  
+  .screen {
+    padding: 20px;
+  }
+  
+  .users-container {
+    width: 150px;
+  }
+}
+
+@media (max-width: 600px) {
+  .chat-container {
+    flex-direction: column;
+  }
+  
+  .users-container {
+    width: 100%;
+    border-left: none;
+    border-top: 2px solid #eef2ff;
+    max-height: 120px;
+    padding: 10px 16px;
+  }
+  
+  .message {
+    max-width: 85%;
+  }
+  
+  .input-container {
+    flex-direction: column;
+  }
+  
+  #message-input {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+  
+  #send-btn {
+    align-self: flex-end;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+  
+  .actions button {
+    margin: 5px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  #login-screen h1 {
+    font-size: 2rem;
+  }
+  
+  .login-form, .room-options, #create-room, #join-private, #room-selector {
+    width: 95%;
+  }
+  
+  .message {
+    max-width: 90%;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div id="login-screen" class="screen">
+      <h1>Simple Chatroom</h1>
+      <div class="login-form">
+        <input type="text" id="username-input" placeholder="Enter your username" maxlength="20">
+        <div class="room-options">
+          <button id="join-public-btn">Join Public Room</button>
+          <button id="create-private-btn">Create Private Room</button>
+          <button id="join-private-btn">Join Private Room</button>
+        </div>
+      </div>
+      <div id="room-selector" class="hidden">
+        <h2>Select a Room</h2>
+        <div id="room-list" class="room-list"></div>
+        <button id="back-btn">Back</button>
+      </div>
+      <div id="create-room" class="hidden">
+        <h2>Create Room</h2>
+        <input type="text" id="room-name-input" placeholder="Room name">
+        <div class="toggle-container">
+          <span class="toggle-label">Private Room</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="private-room-check">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="private-room-info">Requires a code to join. Only visible to those with the code.</div>
+        <input type="text" id="room-code-input" placeholder="Room code (for private rooms)">
+        <div class="actions">
+          <button id="back-from-create-btn">Back</button>
+          <button id="create-room-btn">Create & Join</button>
+        </div>
+      </div>
+      <div id="join-private" class="hidden">
+        <h2>Join Private Room</h2>
+        <input type="text" id="private-room-input" placeholder="Room name">
+        <input type="text" id="private-code-input" placeholder="Room code">
+        <div class="actions">
+          <button id="back-from-private-btn">Back</button>
+          <button id="join-private-room-btn">Join</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="chat-screen" class="screen hidden">
+      <div class="chat-header">
+        <h2 id="room-name">Room: General</h2>
+        <button id="leave-btn">Leave Room</button>
+      </div>
+      <div class="chat-container">
+        <div class="messages-container">
+          <div id="messages" class="messages"></div>
+        </div>
+        <div class="users-container">
+          <h3>Users</h3>
+          <ul id="users-list" class="users-list"></ul>
+        </div>
+      </div>
+      <div class="input-container">
+        <input type="text" id="message-input" placeholder="Type a message...">
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
