@@ -631,132 +631,381 @@ input:checked + .toggle-slider:before {
 .add-option-btn:hover {
   background-color: #3a5bcc;
 }
-/* Enhanced Context Menu Styling */
+
+/* User context menu for moderation *//* Enhanced Context Menu Styling */
 .user-context-menu {
   position: absolute;
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
-  padding: 18px 0; /* Increased padding */
+  padding: 12px 0;
   z-index: 100;
   min-width: 180px;
   max-width: 280px;
 }
 
-/* Updated Poll Container to remove scrollbars */
-.poll-container {
-  padding: 16px;
-  border-top: 2px solid #eef2ff;
-  background-color: white;
-  max-height: none; /* Remove the max-height that was causing scrollbars */
-  overflow-y: visible; /* Change from auto to visible */
-}
-
-/* More minimal ban poll styling */
-.ban-poll {
-  background-color: #fff8f8;
-  border-radius: 10px;
-  padding: 10px; /* Reduced padding */
-  margin-bottom: 12px; /* Reduced margin */
-  box-shadow: 0 1px 4px rgba(255, 82, 82, 0.1); /* Lighter shadow */
-  border-left: 2px solid #ff5252; /* Thinner border */
-  animation: slideIn 0.3s ease-out;
-}
-
-/* Simplified poll header */
-.poll-header {
+.context-menu-item {
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 15px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px; /* Reduced margin */
+  white-space: normal;
+  line-height: 1.4;
+  border-radius: 8px;
+  margin: 2px 8px;
 }
 
-.poll-title {
-  font-weight: 600;
-  color: #ff5252;
-  font-size: 14px; /* Smaller font */
+.context-menu-item:hover {
+  background-color: #f6f9ff;
 }
 
-.poll-timer {
+/* Enhanced Moderation Button Styling */
+.kick-btn,
+.ban-btn,
+.report-btn {
   background-color: #ff5252;
   color: white;
-  border-radius: 10px;
-  padding: 2px 8px; /* Smaller padding */
-  font-size: 11px; /* Smaller font */
+  padding: 14px 18px;
   font-weight: 600;
-}
-
-.poll-info {
-  font-size: 11px; /* Smaller font */
-  color: #7a8299;
-  margin-bottom: 8px; /* Reduced margin */
-}
-
-/* Simplified progress bar */
-.poll-progress {
-  height: 8px; /* Thinner progress bar */
-  background-color: #f2f2f2;
-  border-radius: 4px; /* Smaller radius */
-  margin-bottom: 8px; /* Reduced margin */
-  overflow: hidden;
-  position: relative;
-}
-
-/* More minimal action buttons */
-.poll-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 6px; /* Smaller gap */
-}
-
-.vote-yes, .vote-no {
-  flex: 1;
-  padding: 6px 10px; /* Smaller padding */
-  border-radius: 4px; /* Smaller radius */
-  font-size: 12px; /* Smaller font */
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* More minimal ban button */
-.ban-btn {
-  font-size: 10px; /* Smaller font */
-  color: white;
-  background-color: #ff5252;
-  border: none;
-  border-radius: 3px; /* Smaller radius */
-  width: 20px; /* Smaller width */
-  height: 20px; /* Smaller height */
-  padding: 0;
-  cursor: pointer;
-  margin-left: 6px; /* Smaller margin */
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 2px rgba(255, 82, 82, 0.2); /* Lighter shadow */
+  gap: 8px;
+  min-height: 48px;
+  width: 100%;
+  text-align: center;
+  height: auto; /* Allows height to adjust to content */
+  white-space: normal; /* Allows text to wrap */
+}
+
+.kick-btn:hover,
+.ban-btn:hover,
+.report-btn:hover {
+  background-color: #e04747;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 82, 82, 0.25);
+}
+
+.kick-btn:active,
+.ban-btn:active,
+.report-btn:active {
+  transform: translateY(0);
+}
+
+/* Enhanced Moderation Menu Items */
+.context-menu-item.report,
+.context-menu-item.kick,
+.context-menu-item.ban {
+  color: #ff5252;
+  padding: 16px 20px;
+  margin: 4px 8px;
+  font-weight: 500;
+  border-left: 3px solid #ff5252;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+}
+
+.context-menu-item.report:hover,
+.context-menu-item.kick:hover,
+.context-menu-item.ban:hover {
+  background-color: #fff0f0;
+  font-weight: 600;
+}
+
+/* Add icons to the moderation actions */
+.context-menu-item.kick::before {
+  content: "⛔";
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.context-menu-item.ban::before {
+  content: "🚫";
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.context-menu-item.report::before {
+  content: "⚠️";
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+/* Confirmation dialog for kicking/banning */
+.moderation-confirmation {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  padding: 20px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.moderation-confirmation h3 {
+  color: #4c5773;
+  margin-bottom: 16px;
+  font-size: 18px;
+}
+
+.moderation-confirmation p {
+  margin-bottom: 20px;
+  line-height: 1.5;
+  color: #7a8299;
+}
+
+.confirmation-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.confirm-kick,
+.confirm-ban {
+  flex: 1;
+  background-color: #ff5252;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  height: auto;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: normal;
+}
+
+.cancel-moderation {
+  flex: 1;
+  background-color: #f2f2f2;
+  color: #4c5773;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  height: auto;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: normal;
+}
+
+.confirm-kick:hover,
+.confirm-ban:hover {
+  background-color: #e04747;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 82, 82, 0.25);
+}
+
+.cancel-moderation:hover {
+  background-color: #e8e8e8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Backdrop for the confirmation dialog */
+.moderation-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* Reason input for kicking/banning */
+.moderation-reason {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 16px;
+  border: 2px solid #e6eeff;
+  border-radius: 8px;
+  font-size: 15px;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.moderation-reason:focus {
+  outline: none;
+  border-color: #ff8f8f;
+  box-shadow: 0 0 0 3px rgba(255, 82, 82, 0.15);
+}
+/* Ban notification styles - with improved spacing and color matching */
+.ban-notifications {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  max-width: 320px;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ban-notification {
+  background-color: rgba(250, 252, 255, 0.95);
+  border-radius: 12px;
+  padding: 18px;
+  color: #4c5773;
+  box-shadow: 0 6px 18px rgba(74, 110, 224, 0.15); /* Adjusted shadow for a softer look */
+  animation: slideIn 0.3s ease-out;
+  border: 1px solid rgba(74, 110, 224, 0.3); /* Added a subtle outline */
+  border-left: 4px solid #4a6ee0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ban-notification.success {
+  border-left-color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.3); /* Add outline for success notification */
+}
+
+.ban-notification.fail {
+  border-left-color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3); /* Add outline for fail notification */
+}
+
+.ban-notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ban-notification-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #4a6ee0;
+}
+
+.ban-notification-close {
+  background: none;
+  border: none;
+  color: #7a8299;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
   transition: all 0.2s ease;
 }
 
-.ban-btn:hover {
-  background-color: #d32f2f;
-  transform: scale(1.05); /* Reduced scale effect */
+.ban-notification-close:hover {
+  color: #4a6ee0;
+  transform: scale(1.1);
 }
 
-/* Make the sidebar layout better structured to avoid scrollbars */
-.sidebar {
+.ban-notification-content {
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.ban-notification-progress {
+  background-color: #e6eeff;
+  border-radius: 6px;
+  height: 8px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.ban-notification-bar {
+  background-color: #4a6ee0;
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.ban-notification-bar.warning {
+  background-color: #ff9800;
+}
+
+.ban-notification-bar.critical {
+  background-color: #e74c3c;
+}
+
+.ban-notification-actions {
   display: flex;
-  flex-direction: column;
-  width: 180px;
-  background-color: white;
-  border-left: 2px solid #eef2ff;
+  gap: 12px;
+  margin-top: 14px;
 }
 
-.users-container {
-  flex: 2; /* Gives more space to users container */
-  overflow-y: auto;
+.ban-notification-button {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-.poll-container {
-  flex: 1; /* Takes less space */
-  overflow-y: visible; /* Ensures no scrollbars */
+.ban-notification-yes {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.ban-notification-yes:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+}
+
+.ban-notification-no {
+  background-color: #4a6ee0;
+  color: white;
+}
+
+.ban-notification-no:hover {
+  background-color: #3a5bcc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(74, 110, 224, 0.2);
+}
+
+.ban-notification-yes:disabled,
+.ban-notification-no:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Update user list ban button styling to match */
+#users-list .user-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+#users-list .user-item .ban-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+#users-list .user-item .ban-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }

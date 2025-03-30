@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // DOM elements
+  // Create ban notifications container
+  const banNotificationsContainer = document.createElement('div');
+  banNotificationsContainer.className = 'ban-notifications';
+  document.body.appendChild(banNotificationsContainer);
+  
+  // DOM elements (existing code)
   const loginScreen = document.getElementById('login-screen');
   const chatScreen = document.getElementById('chat-screen');
   const roomSelector = document.getElementById('room-selector');
@@ -18,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const roomListContainer = document.getElementById('room-list');
   const pollContainer = document.getElementById('poll-container');
 
-  // Buttons
+  // Buttons (existing code)
   const joinPublicBtn = document.getElementById('join-public-btn');
   const createPrivateBtn = document.getElementById('create-private-btn');
   const joinPrivateBtn = document.getElementById('join-private-btn');
@@ -36,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Current state
   let currentUsername = '';
   let currentRoom = '';
-  let activePolls = {};
+  let activeNotifications = {};
   
   // Handle errors
   socket.on('error', (data) => {
@@ -158,7 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Clear poll container
     pollContainer.innerHTML = '';
-    activePolls = {};
+    activeNotifications = {};
+    
+    // Clear all active ban notifications
+    removeAllBanNotifications();
   });
 
   // Socket event handlers
@@ -204,6 +212,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update users list
     updateUsersList(data.users);
+    
+    // Clear all active ban notifications
+    removeAllBanNotifications();
   });
 
   socket.on('message', (data) => {
@@ -231,10 +242,9 @@ document.addEventListener('DOMContentLoaded', () => {
     addSystemMessage(`${data.username} left the room`);
     updateUsersList(data.users);
     
-    // Remove any active polls for users who left
-    if (data.username && activePolls[data.username]) {
-      pollContainer.querySelector(`.poll[data-user="${data.username}"]`)?.remove();
-      delete activePolls[data.username];
+    // Remove any active ban notifications for users who left
+    if (data.username && activeNotifications[data.username]) {
+      removeBanNotification(data.username);
     }
   });
   
@@ -242,114 +252,91 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('banPollStarted', (data) => {
     const { pollId, target, initiator, totalUsers, duration } = data;
     
-    // Create poll UI
-    const pollDiv = document.createElement('div');
-    pollDiv.className = 'poll ban-poll';
-    pollDiv.setAttribute('data-poll-id', pollId);
-    pollDiv.setAttribute('data-user', target);
-    
     // Calculate required votes (majority rule)
     const requiredVotes = Math.ceil(totalUsers / 2);
     
-    pollDiv.innerHTML = `
-      <div class="poll-header">
-        <span class="poll-title">Ban ${target}?</span>
-        <span class="poll-timer">${Math.ceil(duration/1000)}s</span>
-      </div>
-      <div class="poll-info">Started by ${initiator}</div>
-      <div class="poll-progress">
-        <div class="poll-bar" style="width: 0%"></div>
-        <span class="poll-count">0/${requiredVotes} votes</span>
-      </div>
-      <div class="poll-actions">
-        <button class="vote-yes">Ban</button>
-        <button class="vote-no">Keep</button>
-      </div>
-    `;
-    
-    // Add poll to container
-    pollContainer.appendChild(pollDiv);
-    
-    // Store poll in active polls
-    activePolls[target] = {
+    // Create notification for ban poll
+    createBanNotification({
       id: pollId,
-      timerInterval: setInterval(() => {
-        const timerElement = pollDiv.querySelector('.poll-timer');
-        let seconds = parseInt(timerElement.textContent);
-        if (seconds > 1) {
-          timerElement.textContent = `${seconds - 1}s`;
-        } else {
-          timerElement.textContent = 'Ending...';
-        }
-      }, 1000)
+      target,
+      initiator,
+      requiredVotes,
+      duration
+    });
+    
+    // Store in active notifications
+    activeNotifications[target] = {
+      id: pollId,
+      element: document.querySelector(`.ban-notification[data-poll-id="${pollId}"]`)
     };
-    
-    // Event listeners for voting
-    pollDiv.querySelector('.vote-yes').addEventListener('click', () => {
-      socket.emit('vote', { pollId, vote: 'yes' });
-      disableVoteButtons(pollDiv);
-    });
-    
-    pollDiv.querySelector('.vote-no').addEventListener('click', () => {
-      socket.emit('vote', { pollId, vote: 'no' });
-      disableVoteButtons(pollDiv);
-    });
   });
   
   socket.on('pollUpdate', (data) => {
     const { pollId, yesVotes, noVotes, totalVotes, required } = data;
     
-    // Find the poll element
-    const pollDiv = pollContainer.querySelector(`.poll[data-poll-id="${pollId}"]`);
-    if (!pollDiv) return;
+    // Find the notification element
+    const notificationDiv = document.querySelector(`.ban-notification[data-poll-id="${pollId}"]`);
+    if (!notificationDiv) return;
     
     // Update progress bar
     const percentage = (yesVotes / required) * 100;
-    pollDiv.querySelector('.poll-bar').style.width = `${percentage > 100 ? 100 : percentage}%`;
+    notificationDiv.querySelector('.ban-notification-bar').style.width = `${percentage > 100 ? 100 : percentage}%`;
     
     // Update vote count
-    pollDiv.querySelector('.poll-count').textContent = `${yesVotes}/${required} votes`;
+    notificationDiv.querySelector('.ban-notification-votes').textContent = `${yesVotes}/${required} votes`;
     
     // Change bar color based on percentage
-    const progressBar = pollDiv.querySelector('.poll-bar');
+    const progressBar = notificationDiv.querySelector('.ban-notification-bar');
     if (percentage >= 75) {
-      progressBar.className = 'poll-bar critical';
+      progressBar.className = 'ban-notification-bar critical';
     } else if (percentage >= 40) {
-      progressBar.className = 'poll-bar warning';
+      progressBar.className = 'ban-notification-bar warning';
     } else {
-      progressBar.className = 'poll-bar';
+      progressBar.className = 'ban-notification-bar';
     }
   });
   
   socket.on('pollEnded', (data) => {
     const { pollId, target, result } = data;
     
-    // Find the poll element
-    const pollDiv = pollContainer.querySelector(`.poll[data-poll-id="${pollId}"]`);
-    if (!pollDiv) return;
+    // Find the notification element
+    const notificationDiv = document.querySelector(`.ban-notification[data-poll-id="${pollId}"]`);
+    if (!notificationDiv) return;
     
-    // Clear timer interval
-    if (activePolls[target] && activePolls[target].timerInterval) {
-      clearInterval(activePolls[target].timerInterval);
-    }
+    // Update notification appearance
+    notificationDiv.classList.add(result ? 'success' : 'fail');
     
-    // Remove poll from active polls
-    delete activePolls[target];
+    // Update notification content
+    const titleElement = notificationDiv.querySelector('.ban-notification-title');
+    titleElement.textContent = result ? 'User Banned' : 'Ban Failed';
     
-    // Update poll appearance
-    pollDiv.classList.add(result ? 'poll-passed' : 'poll-failed');
-    pollDiv.querySelector('.poll-timer').textContent = result ? 'BANNED' : 'FAILED';
+    // Update notification description
+    const contentElement = notificationDiv.querySelector('.ban-notification-content');
+    contentElement.textContent = result 
+      ? `${target} has been banned from the room.` 
+      : `Ban poll for ${target} failed.`;
     
-    // Add result message
-    addSystemMessage(`Ban poll for ${target} ${result ? 'passed' : 'failed'}`);
+    // Remove timer and actions
+    const actionsElement = notificationDiv.querySelector('.ban-notification-actions');
+    if (actionsElement) actionsElement.remove();
     
-    // Disable voting if not already done
-    disableVoteButtons(pollDiv);
+    // Remove progress bar
+    const progressElement = notificationDiv.querySelector('.ban-notification-progress');
+    if (progressElement) progressElement.remove();
     
-    // Remove poll after a short delay
+    // Schedule notification removal
     setTimeout(() => {
-      pollDiv.remove();
+      if (notificationDiv) {
+        notificationDiv.classList.add('closing');
+        setTimeout(() => {
+          notificationDiv.remove();
+          delete activeNotifications[target];
+        }, 300);
+      }
     }, 3000);
+    
+    // Add result message to chat
+    addSystemMessage(`Ban poll for ${target} ${result ? 'passed' : 'failed'}`);
   });
   
   socket.on('userBanned', (data) => {
@@ -358,6 +345,11 @@ document.addEventListener('DOMContentLoaded', () => {
       leaveBtn.click();
     } else {
       addSystemMessage(`${data.username} has been banned from the room`);
+      
+      // Remove any active ban notifications for the banned user
+      if (activeNotifications[data.username]) {
+        removeBanNotification(data.username);
+      }
     }
   });
 
@@ -416,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
       userItem.className = 'user-item';
       userItem.innerHTML = `
         <span class="user-name">${user}</span>
-        <button class="ban-btn" title="Start ban poll">⊗</button>
+        <button class="ban-btn" title="Start ban poll">X</button>
       `;
       
       if (user === currentUsername) {
@@ -445,9 +437,77 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/'/g, "&#039;");
   }
   
-  function disableVoteButtons(pollDiv) {
-    pollDiv.querySelector('.vote-yes').disabled = true;
-    pollDiv.querySelector('.vote-no').disabled = true;
-    pollDiv.querySelector('.poll-actions').classList.add('voted');
+  function createBanNotification(data) {
+    const { id, target, initiator, requiredVotes, duration } = data;
+    
+    // Create notification element
+    const notificationDiv = document.createElement('div');
+    notificationDiv.className = 'ban-notification';
+    notificationDiv.setAttribute('data-poll-id', id);
+    notificationDiv.setAttribute('data-user', target);
+    
+    // Build notification content without timer
+    notificationDiv.innerHTML = `
+      <div class="ban-notification-header">
+        <span class="ban-notification-title">Ban Vote: ${target}</span>
+      </div>
+      <div class="ban-notification-content">
+        Started by ${initiator}
+      </div>
+      <div class="ban-notification-progress">
+        <div class="ban-notification-bar" style="width: 0%"></div>
+      </div>
+      <div class="ban-notification-votes">0/${requiredVotes} votes</div>
+      <div class="ban-notification-actions">
+        <button class="ban-notification-button ban-notification-yes">Ban</button>
+        <button class="ban-notification-button ban-notification-no">Keep</button>
+      </div>
+    `;
+    
+    // Add to container
+    banNotificationsContainer.appendChild(notificationDiv);
+    
+    // Event listeners for voting
+    notificationDiv.querySelector('.ban-notification-yes').addEventListener('click', () => {
+      socket.emit('vote', { pollId: id, vote: 'yes' });
+      disableVoteButtons(notificationDiv);
+    });
+    
+    notificationDiv.querySelector('.ban-notification-no').addEventListener('click', () => {
+      socket.emit('vote', { pollId: id, vote: 'no' });
+      disableVoteButtons(notificationDiv);
+    });
+    
+    return notificationDiv;
+  }
+  
+  function disableVoteButtons(element) {
+    const yesButton = element.querySelector('.ban-notification-yes');
+    const noButton = element.querySelector('.ban-notification-no');
+    
+    if (yesButton) yesButton.disabled = true;
+    if (noButton) noButton.disabled = true;
+    
+    element.querySelector('.ban-notification-actions').classList.add('voted');
+  }
+  
+  function removeBanNotification(username) {
+    if (activeNotifications[username]) {
+      const element = document.querySelector(`.ban-notification[data-user="${username}"]`);
+      if (element) {
+        element.classList.add('closing');
+        setTimeout(() => element.remove(), 300);
+      }
+      delete activeNotifications[username];
+    }
+  }
+  
+  function removeAllBanNotifications() {
+    const notifications = document.querySelectorAll('.ban-notification');
+    notifications.forEach(notification => {
+      notification.classList.add('closing');
+      setTimeout(() => notification.remove(), 300);
+    });
+    activeNotifications = {};
   }
 });
